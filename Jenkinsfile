@@ -14,7 +14,7 @@ pipeline{
     }
 
     stages{
-         
+
         stage('Git Checkout'){
                     when { expression {  params.action == 'create' } }
             steps{
@@ -25,12 +25,12 @@ pipeline{
             }
         }
          stage('Unit Test maven'){
-         
+
          when { expression {  params.action == 'create' } }
 
             steps{
                script{
-                   
+
                    mvnTest()
                }
             }
@@ -39,7 +39,7 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    mvnIntegrationTest()
                }
             }
@@ -48,7 +48,7 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    def SonarQubecredentialsId = 'sonarqube-api'
                    statiCodeAnalysis(SonarQubecredentialsId)
                }
@@ -58,7 +58,7 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    def SonarQubecredentialsId = 'sonarqube-api'
                    QualityGateStatus(SonarQubecredentialsId)
                }
@@ -68,16 +68,23 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    mvnBuild()
                }
+            }
+        }
+        stage ('Push Jar to JFrog') {
+            steps {
+                script {
+                    pushtoJfrog()
+                }
             }
         }
         stage('Docker Image Build'){
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    dockerBuild("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
                }
             }
@@ -86,7 +93,7 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    dockerImageScan("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
                }
             }
@@ -95,19 +102,19 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    dockerImagePush("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
                }
             }
-        }   
+        }
         stage('Docker Image Cleanup : DockerHub '){
          when { expression {  params.action == 'create' } }
             steps{
                script{
-                   
+
                    dockerImageCleanup("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
                }
             }
-        }      
+        }
     }
 }
