@@ -75,7 +75,7 @@ pipeline{
         stage ('Push Jar to JFrog') {
             steps {
                 script {
-                    pushtoJfrog()
+                    pushtoJfrog("${params.JFrogIP}")
                 }
             }
         }
