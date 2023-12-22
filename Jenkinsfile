@@ -14,16 +14,6 @@ pipeline{
     }
 
     stages{
-
-        stage('Git Checkout'){
-                    when { expression {  params.action == 'create' } }
-            steps{
-            gitCheckout(
-                branch: "main",
-                url: "https://github.com/Siva0206/Java_app_3.0.git"
-            )
-            }
-        }
          stage('Unit Test maven'){
 
          when { expression {  params.action == 'create' } }
@@ -39,7 +29,6 @@ pipeline{
          when { expression {  params.action == 'create' } }
             steps{
                script{
-
                    mvnIntegrationTest()
                }
             }
@@ -75,7 +64,6 @@ pipeline{
         stage ('Push Jar to JFrog') {
             steps {
                 script {
-                    sh 'cd target'
                     pushtoJfrog("${params.JFrogIP}")
                 }
             }
